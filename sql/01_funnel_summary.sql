@@ -1,10 +1,10 @@
 -- Identifying active and churned users
 WITH funnel_base AS (
-SELECT 
-  COUNT(a.account_id) AS signups,
-  COUNT(CASE WHEN churn_flag=false THEN a.account_id END) AS active,
-  COUNT(CASE WHEN churn_flag=true THEN a.account_id END) AS churned
-FROM accounts a
+  SELECT 
+    COUNT(a.account_id) AS signups,
+    COUNT(CASE WHEN churn_flag=false THEN a.account_id END) AS active,
+    COUNT(CASE WHEN churn_flag=true THEN a.account_id END) AS churned
+  FROM accounts a
 ),
 -- Ranking subscriptions to be able to pull only the latest one for churned MRR/ARR calculations, ignoring trials
 last_sub AS (
@@ -17,13 +17,16 @@ last_sub AS (
 ),
 -- Calculating churned revenue
 churned_revenue AS (
-SELECT
-  ROUND(SUM(ls.mrr_amount), 2) AS lost_mrr,
-  ROUND(SUM(ls.mrr_amount) * 12, 2) AS lost_arr
-FROM accounts a
-JOIN last_sub ls ON a.account_id = ls.account_id
-WHERE a.churn_flag = true
-  AND ls.rn = 1
+  SELECT
+    ROUND(SUM(ls.mrr_amount), 2) AS lost_mrr,
+    ROUND(SUM(ls.mrr_amount) * 12, 2) AS lost_arr
+  FROM accounts a
+  JOIN last_sub ls ON 
+    a.account_id = ls.account_id
+  WHERE
+    1=1
+    AND a.churn_flag = true
+    AND ls.rn = 1
 )
 -- Combining funnel and churn metrics to measure churn impact
 SELECT 
