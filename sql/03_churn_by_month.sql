@@ -9,7 +9,7 @@ WITH last_churn AS (
 -- Combining permanently churned accounts data with their churn date for a monthly breakdown
 SELECT 
     DATE_TRUNC(churn_date,MONTH) AS churn_month,
-    COUNT(*)
+    COUNT(*) AS churned_accounts
 FROM accounts a
 LEFT JOIN last_churn lc ON 
   a.account_id = lc.account_id
